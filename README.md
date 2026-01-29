@@ -5,7 +5,7 @@ Modern robotics and AI systems often require real-time processing of multiple vi
 
 ---
 
-## 🚀 Features
+## Features
 
 - **Multi-Camera Support** – Ingest video from webcams, RTSP streams, or video files.  
 - **Object Detection & Tracking** – Built-in support for YOLOv8 detection and modular trackers like SORT, DeepSORT, or ByteTrack.  
