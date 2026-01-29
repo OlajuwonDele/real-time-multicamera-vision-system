@@ -1,0 +1,11 @@
+video:
+  source: 0   # or "data/sample.mp4"
+  width: 1280
+  height: 720
+
+model:
+  name: "yolov8n.pt"
+  device: cuda  # or "cpu"
+
+runtime:
+  display: true
