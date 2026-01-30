@@ -4,6 +4,6 @@ class InferenceBackend:
         Args:
             frame (np.ndarray): BGR image
         Returns:
-            detections (list): [x1, y1, x2, y2, score, class_id]
+            detections (list): [x1, y1, x2, y2, score, class_id, class_name]
         """
         raise NotImplementedError
