@@ -1,4 +1,4 @@
-from tracking.tracker import Tracker
+from tracking.base_tracker import Tracker
 import yolox 
 from yolox.tracker.byte_tracker import BYTETracker, STrack
 from dataclasses import dataclass
@@ -16,36 +16,39 @@ class BYTETrackerArgs:
 
 np.float = float 
 class ByteTracker(Tracker):
-    def __init__(self):
+    def __init__(self,class_mapping):
+        """
+        Args:
+            class_mapping (dict): {class_id: class_name} from the YOLO model
+        """
         self.object_tracker = BYTETracker(BYTETrackerArgs())
-
+        self.class_mapping = class_mapping
+        # Create a tracker for every class name found in the model
+        self.trackers = {
+            name: BYTETracker(BYTETrackerArgs()) 
+            for name in class_mapping.values()}
+        
     def track(self):
         if self.frame is None or self.detections is None:
             return []
         
-        class_names = []
-        data = []
-
-        # self.detections: [x1, y1, x2, y2, score, class_id, class_name]
-        for det in self.detections:
-            data.append([det[0], det[1], det[2], det[3], det[4]])
-            class_names.append(det[-1])
+        all_tracks = []
+        img_info = self.frame.shape[:2]
+        
+        for name, tracker in self.trackers.items():
+            # Filter detections where class_name (index 6) matches the tracker's class
+            class_dets = [d[:5] for d in self.detections if d[6] == name]
             
-        track_input = np.array(data, dtype=float)
-        tracks = self.object_tracker.update(output_results=track_input,
-            img_info=self.frame.shape[:2],
-            img_size=self.frame.shape[:2])
+            # Update specific tracker (even if empty to maintain track history)
+            track_input = np.array(class_dets) if len(class_dets) > 0 else np.empty((0, 5))
+            class_targets = tracker.update(track_input, img_info, img_info)
 
-        formatted_tracks = []
-        for track in tracks:
-            if not track.is_confirmed():
-                continue
-
-            formatted_tracks.append({
-                "id": track.track_id,
-                "ltrb": track.tlbr, # [x1, y1, x2, y2]
-                "is_confirmed": True,
-                "class_name": "name",
-            })
-            
-        return formatted_tracks
+            for track in class_targets:
+                all_tracks.append({
+                    "id": track.track_id,
+                    "ltrb": track.tlbr,
+                    "class_name": name,
+                    "is_confirmed": track.is_activated
+                })
+        
+        return all_tracks

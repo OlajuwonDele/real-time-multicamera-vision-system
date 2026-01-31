@@ -34,8 +34,9 @@ def main():
         device=config["model"]["device"]
     )
 
+    model_classes = backend.model.names
     # tracker = DeepsortTracker()
-    tracker = ByteTracker()
+    tracker = ByteTracker(class_mapping=model_classes)
     while True:
         frame, fps = reader.read()
         if frame is None:

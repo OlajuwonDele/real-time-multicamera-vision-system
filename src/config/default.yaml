@@ -1,5 +1,5 @@
 video:
-  source: "data/videos/sample_motorway.mp4"   # or "data/videos/sample.mp4" or 0 for webcam
+  source: 0   # or "data/videos/sample1.mp4" or 0 for webcam
   width: 1280
   height: 720
 

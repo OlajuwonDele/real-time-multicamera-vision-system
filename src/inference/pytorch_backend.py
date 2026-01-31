@@ -20,3 +20,7 @@ class PyTorchBackend(InferenceBackend):
                 detections.append([x1, y1, x2, y2, score, class_id, class_name])
 
         return detections
+    
+    @property
+    def names(self):
+        return self.model.names
