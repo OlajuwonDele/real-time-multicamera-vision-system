@@ -21,7 +21,18 @@ class DeepsortTracker(Tracker):
             formatted_detections.append((bbox, float(score), int(class_id)))
 
         tracks = self.object_tracker.update_tracks(formatted_detections, frame=self.frame)
+        formatted_tracks = []
+   
+        for track, name in zip(tracks, class_names):
+            if not track.is_confirmed():
+                continue
+            
+            formatted_tracks.append({
+                "id": track.track_id,
+                "ltrb": track.to_ltrb(), # Returns [x1, y1, x2, y2]
+                "is_confirmed": True,
+                "class_name": name,
+            })
 
-
-
-        return tracks, class_names
+        return formatted_tracks
+  

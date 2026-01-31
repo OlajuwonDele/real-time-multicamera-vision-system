@@ -14,6 +14,6 @@ class Tracker:
             frame (np.ndarray): BGR image
             detections (list): [x1, y1, x2, y2, score, class_id, class_name]
 
-            Returns: tracks
+            Returns: tracks, class_name
         """
         raise NotImplementedError

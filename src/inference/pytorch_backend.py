@@ -2,7 +2,7 @@ from ultralytics import YOLO
 from inference.inference_backend import InferenceBackend
 
 class PyTorchBackend(InferenceBackend):
-    def __init__(self, model_name, device="cpu"):
+    def __init__(self, model_name, device="cuda"):
         self.model = YOLO(model_name)
         self.model.to(device)
 

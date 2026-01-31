@@ -1,11 +1,11 @@
 video:
-  source: 0   # or "data/sample.mp4"
+  source: "data/videos/sample_motorway.mp4"   # or "data/videos/sample.mp4" or 0 for webcam
   width: 1280
   height: 720
 
 model:
-  name: "yolov8n.pt"
-  device: cuda  # or "cpu"
+  name: "yolo26n.pt"
+  device: "cuda"  # or "cpu"
 
 runtime:
   display: true
