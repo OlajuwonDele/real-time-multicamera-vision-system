@@ -5,6 +5,8 @@ from video.reader import VideoReader
 from inference.pytorch_backend import PyTorchBackend
 from tracking.deepsort import DeepsortTracker
 from tracking.bytetrack import ByteTracker
+from tracking.sort_track import SortTracker
+
 
 def draw_detections(tracker, frame, detections):
     tracker.update(frame, detections)
@@ -36,7 +38,9 @@ def main():
 
     model_classes = backend.model.names
     # tracker = DeepsortTracker()
-    tracker = ByteTracker(class_mapping=model_classes)
+    # tracker = ByteTracker(class_mapping=model_classes)
+    tracker = SortTracker(class_mapping=model_classes)
+
     while True:
         frame, fps = reader.read()
         if frame is None:

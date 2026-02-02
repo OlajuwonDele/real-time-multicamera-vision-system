@@ -8,7 +8,7 @@ Modern robotics and AI systems often require real-time processing of multiple vi
 ## Features
 
 - **Multi-Camera Support** – Ingest video from webcams, RTSP streams, or video files.  
-- **Object Detection & Tracking** – Built-in support for YOLOv8 detection and modular trackers like SORT, DeepSORT, or ByteTrack.  
+- **Object Detection & Tracking** – Built-in support for YOLO26 detection and modular trackers like SORT, DeepSORT, or ByteTrack.  
 - **Modular Inference Backends** – Supports PyTorch, ONNX Runtime, and TensorRT for optimized GPU/CPU performance.  
 - **Distributed Pipeline Ready** – Designed for multi-process or multi-node deployment for scaling.  
 - **Performance Benchmarking** – Measures FPS, latency, and accuracy across cameras and backends.  
