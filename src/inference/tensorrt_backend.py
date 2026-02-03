@@ -1,15 +1,13 @@
 from ultralytics import YOLO
 from inference.inference_backend import InferenceBackend
-import onnxruntime as ort
 
-class ONNXBackend(InferenceBackend):
+class TensorRTBackend(InferenceBackend):
     def __init__(self, model_name, device="cuda"):
         self.model = YOLO(model_name)
-        # self.model.to(device)
+        self.model
 
     def infer(self, frame):
         results = self.model(frame, verbose=False)[0]
-        # results = self.model(frame)
 
         detections = []
         for result in results:

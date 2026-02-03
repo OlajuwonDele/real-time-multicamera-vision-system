@@ -3,9 +3,17 @@ video:
   width: 1280
   height: 720
 
-model:
+pytorch_model:
   name: "yolo26n.pt"
   device: "cuda"  # or "cpu"
+
+onnx_model:
+  name: "yolo26n.onnx"
+  device: "cuda" 
+
+tensorrt_model:
+  name: "yolo26n.engine"
+  device: "cuda" 
 
 runtime:
   display: true

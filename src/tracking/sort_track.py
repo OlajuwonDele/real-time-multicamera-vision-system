@@ -1,4 +1,4 @@
-from tracking.sort import Sort
+from libs.sort import Sort
 from tracking.base_tracker import Tracker
 import numpy as np
 
