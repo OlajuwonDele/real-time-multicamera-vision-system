@@ -32,10 +32,10 @@ def performance_benchmark(performance_test = False, reader = None, config = None
                 pytorch_model=config["pytorch_model"]["name"], 
                 onnx_model=config["onnx_model"]["name"],
                 tensorrt_model=config["tensorrt_model"]["name"], 
-                device=config["pytorch_model"]["device"]
+                device=config["pytorch_model"]["device"],
+                data_yaml=config["dataset"]["data_yaml"],
                 )
-            # infer_performance.create_all_models()
-            # infer_performance.evaluate_all(reader)
+            infer_performance.evaluate_all(reader)
      
 def main():
     with open("src/config/default.yaml", "r") as f:
@@ -47,26 +47,29 @@ def main():
         height=config["video"]["height"]
     )
 
-
+    performance_reader = reader
     performance_test = False
-    performance_benchmark(performance_test, reader, config)
+    performance_benchmark(performance_test, performance_reader, config)
 
-    # backend = PyTorchBackend(
-    #     model_name=config["pytorch_model"]["name"],
-    #     device=config["pytorch_model"]["device"]
-    # )
-    
-    backend = TensorRTBackend(
-        model_name=config["tensorrt_model"]["name"],
-        device=config["tensorrt_model"]["device"]
+    backend = PyTorchBackend(
+        model_name=config["pytorch_model"]["name"],
+        device=config["pytorch_model"]["device"]
     )
+    
+    # backend = TensorRTBackend(
+    #     model_name=config["tensorrt_model"]["name"],
+    #     device=config["tensorrt_model"]["device"]
+    # )
 
     # backend = ONNXBackend(
     #     model_name=config["pytorch_model"]["name"],
     #     device=config["pytorch_model"]["device"]
     # )
-
     model_classes = backend.model.names
+    print(model_classes)
+    # backend.train(dataset_yaml=config["dataset"]["data_yaml"])
+    # model_classes = backend.model.names
+    # print(model_classes)
     # tracker = DeepsortTracker()
     # tracker = ByteTracker(class_mapping=model_classes)
     tracker = SortTracker(class_mapping=model_classes)

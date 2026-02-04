@@ -1,19 +1,22 @@
 video:
-  source: 0   # or "data/videos/sample1.mp4" or 0 for webcam
+  source: "data/videos/basketball_game.mp4"   # or "data/videos/sample1.mp4" or 0 for webcam
   width: 1280
   height: 720
 
 pytorch_model:
-  name: "yolo26n.pt"
+  name: "models/yolo26n.pt"
   device: "cuda"  # or "cpu"
 
 onnx_model:
-  name: "yolo26n.onnx"
+  name: "models/yolo26n.onnx"
   device: "cuda" 
 
 tensorrt_model:
-  name: "yolo26n.engine"
+  name: "models/yolo26n.engine"
   device: "cuda" 
 
 runtime:
   display: true
+
+dataset:
+  data_yaml: "dataset/data.yaml"

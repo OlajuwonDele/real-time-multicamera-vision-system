@@ -24,3 +24,15 @@ class PyTorchBackend(InferenceBackend):
     @property
     def names(self):
         return self.model.names
+    
+    def train(self, dataset_yaml):
+         results = self.model.train(
+        data=dataset_yaml,          # Path to data config
+        epochs=100,               
+        imgsz=640,                  
+        batch=16,                   
+        device=0,                   # Use 0 for your first CUDA GPU
+        project='runs/train',       # Where to save results
+        name='basketball_model',    # Name of this training run
+        optimizer='auto'            # 'SGD', 'Adam', etc.
+    )

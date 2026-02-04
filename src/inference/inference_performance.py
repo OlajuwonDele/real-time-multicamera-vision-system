@@ -78,14 +78,21 @@ class InferencePerformance:
             raise ValueError(f"Unsupported model format: {model_path}")
 
     def evaluate_accuracy(self, model_path):
-        model = YOLO(model_path)
+        # We use the path stored in the config, not the reader
+        if not self.data_yaml:
+            print("Skipping Accuracy: No data_yaml provided in config.")
+            return {"mAP50": 0, "mAP50-95": 0, "precision": 0, "recall": 0}
 
+        model = YOLO(model_path, task='detect')
+
+        # model.val() handles loading the dataset from self.data_yaml
         metrics = model.val(
             data=self.data_yaml,
             imgsz=self.imgsz,
             batch=self.batch,
             device=self.device,
             verbose=False,
+            plots=False # Speeds up validation
         )
 
         return {
@@ -105,17 +112,23 @@ class InferencePerformance:
     ):
         times = []
 
-
-        # Warmup (important for CUDA / TensorRT)
+        # Warmup 
         for _ in range(warmup_frames):
-            frame = reader.read()
-            self.model_run(model_path, frame)
+            frame, _ = reader.read()
+            if frame is not None:
+                self.model_run(model_path, frame)
             
         for _ in range(n_frames):
-            ret, frame = reader.read()
+            frame, _ = reader.read()
+            
+            if frame is None: 
+                break 
+
             t0 = time.time()
             self.model_run(model_path, frame)
             times.append(time.time() - t0)
+
+        if not times: return {"latency_ms": 0, "fps": 0}
 
         mean_latency = sum(times) / len(times)
 
@@ -139,7 +152,7 @@ class InferencePerformance:
 
             print(f"\nEvaluating {name.upper()} model: {model_path}")
 
-            acc = self.evaluate_accuracy(model_path, reader)
+            acc = self.evaluate_accuracy(model_path)
             speed = self.evaluate_speed(model_path, reader)
 
             results[name] = {
