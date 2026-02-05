@@ -2,7 +2,7 @@ from ultralytics import YOLO
 from inference.inference_backend import InferenceBackend
 
 class TensorRTBackend(InferenceBackend):
-    def __init__(self, model_name, device="cuda"):
+    def __init__(self, model_name, device=0):
         self.model = YOLO(model_name)
         self.model
 

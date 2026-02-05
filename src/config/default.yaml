@@ -20,3 +20,15 @@ runtime:
 
 dataset:
   data_yaml: "dataset/data.yaml"
+
+custom_dataset_pytorch_model:
+  name: "models/yolo26_custom_dataset.pt" # runs/detect/runs/train/basketball_model/weights/best.pt"
+  device: 0
+
+custom_dataset_onnx_model:
+  name: "models/yolo26_custom_dataset.onnx"
+  device: 0
+
+custom_dataset_tensorrt_model:
+  name: "models/yolo26_custom_dataset.engine"
+  device: 0

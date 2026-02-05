@@ -98,8 +98,8 @@ class InferencePerformance:
         return {
             "mAP50": float(metrics.box.map50),
             "mAP50-95": float(metrics.box.map),
-            "precision": float(metrics.box.precision),
-            "recall": float(metrics.box.recall),
+            "precision": float(metrics.box.mp), 
+            "recall": float(metrics.box.mr),   
         }
 
 
@@ -150,7 +150,7 @@ class InferencePerformance:
             if model_path is None:
                 continue
 
-            print(f"\nEvaluating {name.upper()} model: {model_path}")
+            print(f"\nEvaluating {name} model: {model_path}")
 
             acc = self.evaluate_accuracy(model_path)
             speed = self.evaluate_speed(model_path, reader)
@@ -160,6 +160,7 @@ class InferencePerformance:
                 **acc,
                 **speed,
             }
+            print(f"Performance of {name} model: is as follows: {results[name]}")
 
         return results
 
