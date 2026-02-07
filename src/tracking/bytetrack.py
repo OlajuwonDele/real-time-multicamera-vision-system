@@ -1,6 +1,5 @@
 from tracking.base_tracker import Tracker
-import yolox 
-from yolox.tracker.byte_tracker import BYTETracker, STrack
+from libs.yolox.yolox.tracker.byte_tracker import BYTETracker, STrack
 from dataclasses import dataclass
 import numpy as np
 

@@ -34,9 +34,11 @@ cd real-time-multicamera-vision-system
 ```
 ### Python Environment
 ```bash
-conda create -n vision python=3.9 -y
+conda env create -f src/config/environment.yaml
 conda activate vision
-pip install -r requirements.txt
+git clone https://github.com/ifzhang/ByteTrack.git
+cd ByteTrack
+pip install -e . --no-build-isolation
 ```
 
 ### Docker
