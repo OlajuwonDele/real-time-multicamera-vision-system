@@ -1,40 +1,32 @@
-# Use Ubuntu as base
-FROM ubuntu:22.04
+FROM python:3.9-slim
 
-ENV DEBIAN_FRONTEND=noninteractive
-ENV PATH=/opt/conda/bin:$PATH
+# System dependencies (NO python installs here)
+RUN apt-get update && apt-get install -y \
+    git \
+    build-essential \
+    libgl1 \
+    libglib2.0-0 \
+    libsm6 \
+    libxext6 \
+    libxrender1 \
+    && rm -rf /var/lib/apt/lists/*
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    wget git curl bzip2 ca-certificates libglib2.0-0 libx11-6 \
-    libsm6 libxext6 libxrender1 && rm -rf /var/lib/apt/lists/*
+WORKDIR /workspace
 
-# Install Miniconda
-RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O /tmp/miniconda.sh \
-    && bash /tmp/miniconda.sh -b -p /opt/conda \
-    && rm /tmp/miniconda.sh \
-    && /opt/conda/bin/conda clean -afy
-
-# Create conda environment with Python 3.9.25
-RUN conda create -y -n vision python=3.9.25 && conda clean -afy
-
-SHELL ["conda", "run", "-n", "vision", "/bin/bash", "-c"]
-
-# Upgrade pip
-RUN pip install --upgrade pip setuptools wheel
-
-# Copy requirements file
+# Copy project files
+COPY . /workspace
 COPY requirements.txt /workspace/requirements.txt
 
-# Install all Python packages
+# Python deps
+RUN pip install --upgrade pip setuptools wheel
 RUN pip install -r /workspace/requirements.txt
 
-# Copy your project into the container
-WORKDIR /workspace
-COPY . /workspace
+# ---- IMPORTANT: ONNX Runtime GPU ----
+RUN pip uninstall -y onnxruntime || true
+RUN pip install onnxruntime-gpu==1.19.2
 
-# Install your local packages in editable mode
-RUN pip install -e ./ByteTrack --no-build-isolation
-RUN pip install -e ./sort --no-build-isolation
+# Clone + install ByteTrack
+RUN git clone https://github.com/ifzhang/ByteTrack.git /workspace/ByteTrack \
+    && pip install -e /workspace/ByteTrack --no-build-isolation
 
 CMD ["/bin/bash"]

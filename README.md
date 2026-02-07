@@ -43,8 +43,14 @@ pip install -e . --no-build-isolation
 
 ### Docker
 ```bash
-docker build -t multi-camera-vision .
-docker run --gpus all -it -v /path/to/videos:/videos multi-camera-vision
+docker build -f docker/Dockerfile -t multi-camera-vision .
+xhost +local:docker
+docker run --gpus all -it \
+  -e DISPLAY=$DISPLAY \
+  -e QT_X11_NO_MITSHM=1 \
+  -v /tmp/.X11-unix:/tmp/.X11-unix \
+  -v /path/to/videos:/videos \
+  multi-camera-vision
 ```
 
 ## Usage
