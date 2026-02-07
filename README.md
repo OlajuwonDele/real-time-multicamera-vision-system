@@ -51,6 +51,8 @@ docker run --gpus all -it \
   -v /tmp/.X11-unix:/tmp/.X11-unix \
   -v /path/to/videos:/videos \
   multi-camera-vision
+
+xhost -local:docker # revoke access after use of docker container. 
 ```
 
 ## Usage
