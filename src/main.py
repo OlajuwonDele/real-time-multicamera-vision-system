@@ -1,6 +1,6 @@
 import cv2
 import yaml
-        
+import multiprocessing
 import time
 import numpy as np
 from typing import Dict, List
@@ -97,11 +97,10 @@ def best_tracker(model_classes: dict, reader, detection_model) -> object:
         "DeepSORT": DeepsortTracker() 
     }
 
-    # 2. Run Benchmark
+    # Run Benchmark
     # We pass the reader and model to generate test data
     scores = benchmark_trackers(trackers, reader, detection_model)
 
-    # 3. Select Winner
     # We select the one with the minimum latency
     fastest = min(scores, key=scores.get)
     fastest_tracker = trackers[fastest]
@@ -134,22 +133,41 @@ def model_performance_benchmark(performance_test = False, reader = None, config 
                 )
             return infer_performance.evaluate_all(reader)
     return {}
-     
 
+def track_video(source, width, height, config, backend, tracker):
+    reader = VideoReader(
+        source=source,
+        width=width,
+        height=height
+    )
 
+    while True:
+        frame, fps = reader.read()
+        if frame is None:
+            break
 
-     
-def main():
-    with open("src/config/default.yaml", "r") as f:
-        config = yaml.safe_load(f)
+        detections = backend.infer(frame)
+        frame = draw_detections(tracker, frame, detections)
+        cv2.putText(frame, f"FPS: {fps:.1f}", (20, 40),
+                    cv2.FONT_HERSHEY_SIMPLEX, 1.0, (0, 0, 255), 2)
 
+        if config["runtime"]["display"]:
+            cv2.imshow("Inference", frame)
+            if cv2.waitKey(1) & 0xFF == ord("q"):
+                break
+
+    reader.release()
+    cv2.destroyAllWindows()
+
+def fastest_video_track(config):
+    print("Running fastest object detection")
     reader = VideoReader(
         source=config["video"]["source"],
         width=config["video"]["width"],
         height=config["video"]["height"]
     )
 
-    # backend.train(dataset_yaml=config["dataset"]["data_yaml"])  # train on custom dataset. In this project I use a basketball game.
+    # backend.train(dataset_yaml=config["dataset"]["data_yaml"])  # train on custom dataset. In this project I use a basketball game. run train if trained policy on dataset does not exist
     performance_reader = reader
     backend = best_backend(config = config, performance_reader = performance_reader)
     model_classes = backend.model.names
@@ -174,6 +192,62 @@ def main():
     reader.release()
     cv2.destroyAllWindows()
 
+def run_multi(config):
+    print("Running multi video object detection")
+    multiprocessing.set_start_method("spawn", force=True)
+
+    backend1 = TensorRTBackend(
+        model_name=config["custom_dataset_tensorrt_model"]["name"],
+        device=config["custom_dataset_tensorrt_model"]["device"],
+    )
+    backend2 = PyTorchBackend(
+        model_name=config["pytorch_model"]["name"],
+        device=config["pytorch_model"]["device"],
+    )
+
+    jobs = [
+        (
+            config["video"]["source"],
+            config["video"]["width"],
+            config["video"]["height"],
+            config,
+            backend1,
+            ByteTracker(class_mapping=backend1.names),
+        ),
+        (
+            config["video2"]["source"],
+            config["video2"]["width"],
+            config["video2"]["height"],
+            config,
+            backend2,
+            ByteTracker(class_mapping=backend2.names),
+        ),
+    ]
+
+    with multiprocessing.Pool(processes=2) as pool:
+        pool.starmap(track_video, jobs)
+
+def main():
+    with open("src/config/default.yaml", "r") as f:
+        config = yaml.safe_load(f)
+    
+    choice = input(
+        "Select mode:\n"
+        "  [f] Fastest object detection & tracking\n"
+        "  [m] Multi-video object tracking\n"
+        "> "
+    ).strip().lower()
+    actions = {
+        "f": lambda: fastest_video_track(config),
+        "m": lambda: run_multi(config),
+    }
+
+
+    try:
+        actions[choice]()
+    except KeyError:
+        raise ValueError("Invalid choice. Please select 'f' or 'm'.")  
+    
 
 if __name__ == "__main__":
     main()

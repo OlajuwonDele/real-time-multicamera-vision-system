@@ -3,6 +3,11 @@ video:
   width: 1280
   height: 720
 
+video2:
+  source: "data/videos/sample_motorway.mp4"                          
+  width: 1280
+  height: 720
+
 pytorch_model:
   name: "models/yolo26n.pt"
   device: "cuda"  # or "cpu"
