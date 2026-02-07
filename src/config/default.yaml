@@ -4,7 +4,7 @@ video:
   height: 720
 
 video2:
-  source: "data/videos/sample_motorway.mp4"                          
+  source: "data/videos/ambulance.mp4"                          
   width: 1280
   height: 720
 
